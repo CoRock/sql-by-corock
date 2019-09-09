@@ -23,7 +23,7 @@ select date_format(max(hire_date), '%Y년 %m월 %d일') as '신입사원 입사�
  * 가장 오래 근속한 직원의 입사일은 언제인가요? 다음 형식으로 출력해주세요.
  * 예) 2014년 07월 10일
  */
-select min( date_format(from_date, '%Y년 %m월 %d일') ) as 입사일
+select max( date_format(from_date, '%Y년 %m월 %d일') ) as 입사일
 from dept_emp;
 
  
