@@ -41,9 +41,12 @@ order by concat(e.first_name, ' ', e.last_name) asc;
      and c.emp_no = e.emp_no
      and e.emp_no = s.emp_no
      and e.emp_no = t.emp_no
-     and c.to_date = '9999-01-01'
+     and date_format(t.to_date, '%Y') like '9999'
 order by concat(e.first_name, ' ', e.last_name) asc;
 
+select s.to_date, t.to_date from salaries s, titles t
+where s.emp_no = t.emp_no
+order by s.to_date asc, t.to_date asc;
 
 /**
  * 문제 5: ‘Technique Leader’의 직책으로 과거에 근무한 적이 있는 모든 사원의 사번과 이름을 출력하세요.
@@ -105,3 +108,71 @@ order by avg(s.salary) desc;
      and s.to_date = '9999-01-01'
 group by t.title
 order by avg(s.salary) desc;
+
+
+/**
+ * 예제 5: 현재 직책별로 평균 연봉과 인원수를 구하되 직책별로 인원이 100명 이상인 직책만 출력하세요.
+ */
+  select t.title as '직책', avg(s.salary) as '평균 연봉', count(*) as 인원수
+    from employees e, salaries s, titles t
+   where e.emp_no = s.emp_no
+     and e.emp_no = t.emp_no
+     and s.to_date = '9999-01-01'
+     and t.to_date = '9999-01-01'
+group by t.title
+  having 인원수 >= 100;
+
+
+/**
+ * 예제 6: 현재 부서별로 현재 직책이 Engineer인 직원들에 대해서만 평균급여를 구하세요.
+ */
+  select d.dept_name, avg(e.salary)
+    from employees a, dept_emp b, titles c, departments d, salaries e
+   where a.emp_no = b.emp_no
+     and a.emp_no = c.emp_no
+     and a.emp_no = e.emp_no
+     and b.dept_no = d.dept_no
+     and b.to_date = '9999-01-01'
+     and c.to_date = '9999-01-01'
+     and e.to_date = '9999-01-01'
+     and c.title = 'Engineer'
+group by d.dept_name;
+
+
+
+-- 밑에는 내가 한거
+select d.dept_name, avg(s.salary) as '평균급여'
+  from dept_emp c, departments d, employees e, salaries s, titles t
+ where c.dept_no = d.dept_no
+   and c.emp_no = e.emp_no
+   and e.emp_no = s.emp_no
+   and e.emp_no = t.emp_no
+   and c.to_date = '9999-01-01';
+-- and d.dept_name = 'Engineer'
+-- group by d.dept_name;
+
+
+/**
+ * 예제 7:
+ * 현재 직책별로 급여의 총합을 구하되 Engineer직책은 제외하세요.
+ * 단, 총합이 2,000,000,000이상인 직책만 나타내며 급여총합에 대해서 내림차순(DESC)로 정렬하세요.
+ */
+  select c.title, sum(e.salary)
+    from employees a, titles c, salaries e
+   where a.emp_no = c.emp_no
+     and a.emp_no = e.emp_no
+     and c.to_date = '9999-01-01'
+     and e.to_date = '9999-01-01'
+     and c.title <> 'Engineer'
+group by c.title
+  having sum(e.salary) >= 2000000000;
+
+-- 밑에는 내가 한거
+  select t.title as '직책', sum(s.salary) as '급여총합'
+    from salaries s, titles t
+   where s.emp_no = t.emp_no
+     and s.to_date = '9999-01-01'
+     and t.title != 'Engineer'
+group by title
+  having sum(s.salary) >= 2000000000
+order by sum(s.salary) desc;
